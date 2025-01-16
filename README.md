@@ -22,7 +22,7 @@ package main
 
 import (
     "github.com/redis/go-redis/v9"
-    "github.com/your/repo/redisson"
+    "github.com/Tinaliasd/redisson"
     "time"
 )
 
