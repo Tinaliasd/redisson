@@ -10,7 +10,7 @@ Redisson-Go 是一个基于 Redis 的分布式工具库，灵感来源于 Java �
 
 ## 安装
 ```bash
-go get github.com/your/repo/redisson
+go get github.com/Tinaliasd/redisson
 ```
 
 ## 快速开始
