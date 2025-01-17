@@ -121,7 +121,6 @@ func (rl *RedissonRateLimiter) getPermitsName() string {
 // getClientPermitsName 返回客户端许可键名。
 func (rl *RedissonRateLimiter) getClientPermitsName() string {
 	// 假设在此直接使用 rl.RedissonObject.Redisson.id，
-	// 对应 Java 中的 commandExecutor.getConnectionManager().getId()。
 	return rl.suffixName(rl.getPermitsName(), rl.Redisson.id)
 }
 
@@ -398,107 +397,6 @@ func (rl *RedissonRateLimiter) availablePermitsLua() (*int64, error) {
 	return &res, err
 
 }
-
-// func (rl *RedissonRateLimiter) tryAcquireLua(permits int64) (*int64, error) {
-//
-//		// keys 数组与 Lua 中的 KEYS 对应，顺序需与脚本中一致
-//		keys := []string{
-//			rl.getRawName(),
-//			rl.getValueName(),
-//			rl.getClientValueName(),
-//			rl.getPermitsName(),
-//			rl.getClientPermitsName(),
-//		}
-//
-//		// ARGV:
-//		// 1) 请求的令牌数 permits
-//		// 2) 当前时间毫秒时间戳
-//		// 3) 随机字节 (Java 原代码是 8 字节随机值)
-//		nowMillis := time.Now().UnixNano() / int64(time.Millisecond)
-//		randomBytes := make([]byte, 8)
-//		_, err := rand.Read(randomBytes)
-//		if err != nil {
-//			return nil, err
-//		}
-//
-//		args := []interface{}{
-//			permits,
-//			nowMillis,
-//			string(randomBytes), // Lua 脚本里会把这作为二进制字符串处理
-//		}
-//
-//		// 执行 Lua 脚本
-//		res, err := rl.client.Eval(context.Background(), tryAcquireScript, keys, args...).Int64()
-//		if err != nil {
-//			if err == redis.Nil {
-//				return nil, nil
-//			}
-//			return nil, err
-//		}
-//
-//		return &res, nil
-//	}
-//func (rl *RedissonRateLimiter) tryAcquireLua(permits int64) (*int64, error) {
-//	fmt.Printf("Executing tryAcquireLua for %d permits...\n", permits)
-//
-//	keys := []string{
-//		rl.getRawName(),
-//		rl.getValueName(),
-//		rl.getClientValueName(),
-//		rl.getPermitsName(),
-//		rl.getClientPermitsName(),
-//	}
-//
-//	nowMillis := time.Now().UnixNano() / int64(time.Millisecond)
-//	randomBytes := make([]byte, 8)
-//	_, err := rand.Read(randomBytes)
-//	if err != nil {
-//		fmt.Printf("Error generating random bytes: %v\n", err)
-//		return nil, err
-//	}
-//
-//	args := []interface{}{
-//		permits,
-//		nowMillis,
-//		string(randomBytes),
-//	}
-//
-//	// Printing keys
-//	fmt.Println("Keys:")
-//	for _, key := range keys {
-//		fmt.Println(key)
-//	}
-//
-//	// Printing args
-//	fmt.Println("Args:")
-//	for _, arg := range args {
-//		switch v := arg.(type) {
-//		case int:
-//			fmt.Println("Integer:", v)
-//		case int64:
-//			fmt.Println("Int64:", v)
-//		case []byte:
-//			fmt.Println("Byte slice in hex:", hex.EncodeToString(v))
-//		case string:
-//			fmt.Printf("randomBytes in hex: %x\n", randomBytes)
-//		default:
-//			fmt.Printf("Unknown type: %T with value: %v\n", v, v)
-//		}
-//	}
-//
-//	res, err := rl.client.Eval(context.Background(), tryAcquireScript, keys, args...).Int64()
-//	if err != nil {
-//		if err == redis.Nil {
-//			fmt.Println("Redis returned nil.")
-//			return nil, nil
-//		}
-//		fmt.Printf("Error executing Lua script: %v\n", err)
-//		return nil, err
-//	}
-//
-//	fmt.Printf("Lua script result: %d\n", res)
-//	return &res, nil
-//}
 
 func (rl *RedissonRateLimiter) tryAcquireLua(permits int64) (*int64, error) {
 	// 加锁保护并发访问
