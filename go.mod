@@ -1,4 +1,4 @@
-module github.com/tinaliasd/redisson
+module github.com/Tinaliasd/redisson
 
 go 1.21
 
